@@ -141,16 +141,16 @@ def inject_custom_css(theme='light'):
             font-size: 0.875rem;
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px -1px {primary_color}33, 0 2px 4px -1px {primary_color}1a;
-        }
+        }}
         
-        .stButton > button:hover {
+        .stButton > button:hover {{
             background-color: {primary_hover} !important;
             color: #ffffff !important;
             box-shadow: 0 10px 15px -3px {primary_color}66, 0 4px 6px -2px {primary_color}33;
             transform: translateY(-1px);
-        }
+        }}
         
-        .stButton > button p {
+        .stButton > button p {{
             color: #ffffff !important;
         }}
         
@@ -834,7 +834,7 @@ def render_controls(key_suffix=""):
     st.markdown("---")
     
     # Process button
-    detect_btn = st.button("Detect Edges / Apply Filter", use_container_width=True, key=f"btn_{key_suffix}")
+    detect_btn = st.button("Detect Edges / Apply Filter", key=f"btn_{key_suffix}")
     
     return {
         "uploaded_file": uploaded_file,
@@ -910,7 +910,7 @@ def main():
                 <div class="image-card-title">Original Image</div>
             </div>
             """, unsafe_allow_html=True)
-            st.image(image, use_container_width=True)
+            st.image(image, use_column_width=True)
             
             # Display image info
             img_array = np.array(image)
@@ -932,7 +932,7 @@ def main():
                 """, unsafe_allow_html=True)
                 
                 if 'result_image' in st.session_state:
-                    st.image(st.session_state['result_image'], use_container_width=True)
+                    st.image(st.session_state['result_image'], use_column_width=True)
                     
                     # Download button
                     result_bytes = convert_image_for_download(st.session_state['result_image'])
@@ -940,8 +940,7 @@ def main():
                         label="Download Result",
                         data=result_bytes,
                         file_name=f"processed_{st.session_state.get('algorithm_used', algorithm).lower()}.png",
-                        mime="image/png",
-                        use_container_width=True
+                        mime="image/png"
                     )
                     
                     st.markdown('<div class="success-msg">Processing completed successfully.</div>', 
