@@ -652,11 +652,11 @@ ALGORITHM_INFO = {
 
 def render_controls(key_suffix=""):
     """
-    Render the control panel widgets.
+    Render the control panel widgets in the main area.
     Returns a dictionary of user inputs.
     """
     # File uploader
-    st.markdown("### Upload Image")
+    st.markdown("### 1. Upload Image")
     uploaded_file = st.file_uploader(
         "Choose an image file",
         type=['jpg', 'png', 'jpeg'],
@@ -667,40 +667,50 @@ def render_controls(key_suffix=""):
     st.markdown("---")
     
     # Algorithm selection
-    st.markdown("### Edge Detection Algorithm")
-    algorithm = st.radio(
-        "Choose Operator:",
-        options=['Sobel', 'Roberts', 'Prewitt', 'Laplacian', 'Frei-Chen', 'Canny'],
-        help="Select the edge detection algorithm to apply",
-        key=f"algo_{key_suffix}"
-    )
+    st.markdown("### 2. Select Algorithm")
+    
+    col_algo, col_params = st.columns([1, 1])
+    
+    with col_algo:
+        algorithm = st.radio(
+            "Choose Operator:",
+            options=['Sobel', 'Roberts', 'Prewitt', 'Laplacian', 'Frei-Chen', 'Canny'],
+            help="Select the edge detection algorithm to apply",
+            key=f"algo_{key_suffix}",
+            horizontal=True
+        )
     
     # Canny-specific parameters
     canny_low, canny_high = 50, 150
-    if algorithm == 'Canny':
-        st.markdown("---")
-        st.markdown("### Canny Parameters")
-        canny_low = st.slider(
-            "Low Threshold",
-            min_value=0,
-            max_value=255,
-            value=50,
-            help="Edges with gradient below this are discarded",
-            key=f"low_{key_suffix}"
-        )
-        canny_high = st.slider(
-            "High Threshold",
-            min_value=0,
-            max_value=255,
-            value=150,
-            help="Edges with gradient above this are strong edges",
-            key=f"high_{key_suffix}"
-        )
-    
+    with col_params:
+        if algorithm == 'Canny':
+            st.markdown("**Canny Parameters**")
+            c1, c2 = st.columns(2)
+            with c1:
+                canny_low = st.slider(
+                    "Low Threshold",
+                    min_value=0,
+                    max_value=255,
+                    value=50,
+                    key=f"low_{key_suffix}"
+                )
+            with c2:
+                canny_high = st.slider(
+                    "High Threshold",
+                    min_value=0,
+                    max_value=255,
+                    value=150,
+                    key=f"high_{key_suffix}"
+                )
+        else:
+            # Show info about selected algorithm
+            info = ALGORITHM_INFO[algorithm]
+            st.info(f"**{info['name']}**: {info['description']}")
+
     st.markdown("---")
     
     # Process button
-    detect_btn = st.button("Detect Edges", use_container_width=True, key=f"btn_{key_suffix}")
+    detect_btn = st.button("Detect Edges", use_container_width=True, type="primary", key=f"btn_{key_suffix}")
     
     return {
         "uploaded_file": uploaded_file,
@@ -717,7 +727,7 @@ def main():
     st.set_page_config(
         page_title="Edge Detection",
         layout="wide",
-        initial_sidebar_state="expanded"
+        initial_sidebar_state="collapsed"
     )
     
     # Initialize session state for theme
@@ -728,66 +738,37 @@ def main():
     inject_custom_css(st.session_state.theme)
     
     # ========================================================================
-    # SIDEBAR - Control Panel
+    # HEADER & THEME TOGGLE
     # ========================================================================
     
-    with st.sidebar:
-        st.markdown('<p class="sidebar-header">Control Panel</p>', unsafe_allow_html=True)
-        
+    col_title, col_toggle = st.columns([6, 1])
+    with col_title:
+        st.markdown('<h1 class="main-title" style="margin-top:0;">Digital Image <span>Edge Detection</span></h1>', unsafe_allow_html=True)
+        st.markdown('<p class="subtitle">Turn your images into edge maps in seconds.</p>', unsafe_allow_html=True)
+    
+    with col_toggle:
         # Theme Toggle
-        col_theme1, col_theme2 = st.columns([1, 3])
-        with col_theme1:
-            if st.session_state.theme == 'dark':
-                st.markdown("🌙")
-            else:
-                st.markdown("☀️")
-        with col_theme2:
-            theme_btn = st.button(
-                f"Switch to {'Light' if st.session_state.theme == 'dark' else 'Dark'} Mode", 
-                key="theme_toggle"
-            )
-            if theme_btn:
-                st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
-                st.rerun()
-        
-        st.markdown("---")
-        
-        # Render controls in sidebar
-        controls = render_controls("sidebar")
-        
-        # Reset button
-        if st.button("Reset App", use_container_width=True):
-            st.session_state.clear()
+        if st.button(f"{'☀️' if st.session_state.theme == 'dark' else '🌙'} Theme", key="theme_toggle"):
+            st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
             st.rerun()
-        
-        # Algorithm info expander
-        st.markdown("---")
-        with st.expander("Algorithm Information"):
-            info = ALGORITHM_INFO[controls['algorithm']]
-            st.markdown(f"**{info['name']}**")
-            st.markdown(info['description'])
-            if 'kernel_x' in info:
-                st.code(f"Kernel X: {info['kernel_x']}")
-                st.code(f"Kernel Y: {info['kernel_y']}")
-            elif 'kernel' in info:
-                st.code(f"Kernel: {info['kernel']}")
-            elif 'parameters' in info:
-                st.info(f"Parameters: {info['parameters']}")
-    
+            
+    st.markdown("---")
+
     # ========================================================================
-    # MAIN CONTENT AREA
+    # CONTROLS (PRIMARY SECTION)
     # ========================================================================
     
-    # Title
-    st.markdown('<h1 class="main-title">Digital Image <span>Edge Detection</span></h1>', unsafe_allow_html=True)
-    st.markdown('<p class="subtitle">Turn your images into edge maps in seconds.</p>', unsafe_allow_html=True)
+    controls = render_controls("main")
     
-    # Use controls from sidebar
     uploaded_file = controls['uploaded_file']
     algorithm = controls['algorithm']
     canny_low = controls['canny_low']
     canny_high = controls['canny_high']
     detect_btn = controls['detect_btn']
+
+    # ========================================================================
+    # RESULTS AREA
+    # ========================================================================
 
     # Check if image is uploaded
     if uploaded_file is not None:
@@ -823,20 +804,22 @@ def main():
                     <div class="image-card-title">Result ({st.session_state.get('algorithm_used', algorithm)})</div>
                 </div>
                 """, unsafe_allow_html=True)
-                st.image(st.session_state['result_image'], use_container_width=True)
                 
-                # Download button
-                result_bytes = convert_image_for_download(st.session_state['result_image'])
-                st.download_button(
-                    label="Download Result",
-                    data=result_bytes,
-                    file_name=f"edge_detection_{st.session_state.get('algorithm_used', algorithm).lower()}.png",
-                    mime="image/png",
-                    use_container_width=True
-                )
-                
-                st.markdown('<div class="success-msg">Edge detection completed successfully.</div>', 
-                           unsafe_allow_html=True)
+                if 'result_image' in st.session_state:
+                    st.image(st.session_state['result_image'], use_container_width=True)
+                    
+                    # Download button
+                    result_bytes = convert_image_for_download(st.session_state['result_image'])
+                    st.download_button(
+                        label="Download Result",
+                        data=result_bytes,
+                        file_name=f"edge_detection_{st.session_state.get('algorithm_used', algorithm).lower()}.png",
+                        mime="image/png",
+                        use_container_width=True
+                    )
+                    
+                    st.markdown('<div class="success-msg">Edge detection completed successfully.</div>', 
+                               unsafe_allow_html=True)
         else:
             with col2:
                 st.markdown("""
@@ -844,37 +827,18 @@ def main():
                     <div class="image-card-title">Result</div>
                 </div>
                 """, unsafe_allow_html=True)
-                st.info("Click 'Detect Edges' button in the sidebar to process the image.")
+                st.info("Click 'Detect Edges' button above to process the image.")
     
     else:
         # Show instruction when no image is uploaded
-        # Use dynamic classes instead of inline styles
-        st.markdown("""
-        <div class="upload-instruction">
-            <h3 class="dynamic-text" style="margin-bottom: 0.5rem;">Upload an Image to Begin</h3>
-            <p class="dynamic-subtext">
-                Use the sidebar to upload a JPG, PNG, or JPEG image
-            </p>
-        </div>
-        """, unsafe_allow_html=True)
+        st.info("Please upload an image to start.")
         
-        # Show available algorithms
-        st.markdown("### Available Edge Detection Algorithms")
-        
-        algo_cols = st.columns(3)
-        algorithms_list = list(ALGORITHM_INFO.keys())
-        
-        for idx, algo in enumerate(algorithms_list):
-            with algo_cols[idx % 3]:
-                info = ALGORITHM_INFO[algo]
-                st.markdown(f"""
-                <div class="dynamic-card" style="height: 180px;">
-                    <h4 style="margin-bottom: 0.5rem;">{info['name']}</h4>
-                    <p class="dynamic-subtext" style="font-size: 0.85rem; line-height: 1.4;">
-                        {info['description'][:150]}...
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+        # Show available algorithms info
+        with st.expander("Learn about the algorithms"):
+            for algo, info in ALGORITHM_INFO.items():
+                st.markdown(f"**{info['name']}**")
+                st.markdown(info['description'])
+                st.markdown("---")
     
     # Footer
     st.markdown("---")
