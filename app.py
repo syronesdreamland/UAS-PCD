@@ -22,7 +22,7 @@ import io
 def inject_custom_css():
     """
     Inject custom CSS to style the Streamlit application.
-    Removes default header/footer and applies modern dark theme styling.
+    Removes default header/footer and applies modern light theme styling (White & Green).
     """
     st.markdown("""
     <style>
@@ -32,7 +32,7 @@ def inject_custom_css():
         /* Global settings */
         html, body, [class*="css"] {
             font-family: 'Inter', sans-serif;
-            color: #ffffff;
+            color: #1f2937;
         }
 
         /* Hide Streamlit default elements */
@@ -42,7 +42,7 @@ def inject_custom_css():
         
         /* Main container styling */
         .stApp {
-            background-color: #101622;
+            background-color: #ffffff;
         }
         
         .main .block-container {
@@ -53,8 +53,8 @@ def inject_custom_css():
         
         /* Sidebar styling */
         [data-testid="stSidebar"] {
-            background-color: #0d121c;
-            border-right: 1px solid #282e39;
+            background-color: #f8fafc;
+            border-right: 1px solid #e5e7eb;
         }
         
         [data-testid="stSidebar"] .block-container {
@@ -63,7 +63,7 @@ def inject_custom_css():
         
         /* Title styling */
         .main-title {
-            color: #ffffff;
+            color: #111827;
             font-size: 3rem;
             font-weight: 900;
             text-align: center;
@@ -72,11 +72,11 @@ def inject_custom_css():
         }
         
         .main-title span {
-            color: #135bec;
+            color: #059669; /* Emerald 600 */
         }
         
         .subtitle {
-            color: #9da6b9;
+            color: #6b7280;
             text-align: center;
             font-size: 1.125rem;
             margin-bottom: 3rem;
@@ -85,15 +85,16 @@ def inject_custom_css():
         
         /* Card styling for image containers */
         .image-card {
-            background: #1c1f27;
-            border: 1px solid #282e39;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
             border-radius: 12px;
             padding: 1rem;
             margin-bottom: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
         }
         
         .image-card-title {
-            color: #ffffff;
+            color: #111827;
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
@@ -105,7 +106,7 @@ def inject_custom_css():
         /* Button styling */
         .stButton > button {
             width: 100%;
-            background-color: #135bec;
+            background-color: #059669; /* Emerald 600 */
             color: white;
             border: none;
             border-radius: 8px;
@@ -113,21 +114,21 @@ def inject_custom_css():
             font-weight: 600;
             font-size: 0.875rem;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(19, 91, 236, 0.1), 0 2px 4px -1px rgba(19, 91, 236, 0.06);
+            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2), 0 2px 4px -1px rgba(5, 150, 105, 0.1);
         }
         
         .stButton > button:hover {
-            background-color: #1d4ed8;
-            box-shadow: 0 10px 15px -3px rgba(19, 91, 236, 0.2), 0 4px 6px -2px rgba(19, 91, 236, 0.1);
+            background-color: #047857; /* Emerald 700 */
+            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3), 0 4px 6px -2px rgba(5, 150, 105, 0.2);
             transform: translateY(-1px);
         }
         
         /* Download button styling */
         .stDownloadButton > button {
             width: 100%;
-            background-color: #1c1f27;
-            color: #ffffff;
-            border: 1px solid #282e39;
+            background-color: #ffffff;
+            color: #059669;
+            border: 1px solid #059669;
             border-radius: 8px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
@@ -136,9 +137,8 @@ def inject_custom_css():
         }
         
         .stDownloadButton > button:hover {
-            background-color: #282e39;
-            border-color: #3b4354;
-            color: #ffffff;
+            background-color: #ecfdf5;
+            color: #047857;
         }
         
         /* Radio button styling */
@@ -148,102 +148,103 @@ def inject_custom_css():
         }
         
         .stRadio > div > label {
-            color: #ffffff !important;
+            color: #374151 !important;
         }
         
         /* File uploader styling */
         [data-testid="stFileUploader"] {
-            background: #1c1f27;
-            border: 1px dashed #282e39;
+            background: #ffffff;
+            border: 1px dashed #d1d5db;
             border-radius: 12px;
             padding: 2rem;
         }
         
         [data-testid="stFileUploader"]:hover {
-            border-color: #135bec;
-            background: #1c1f27;
+            border-color: #059669;
+            background: #f9fafb;
         }
         
         /* Slider styling */
         .stSlider > div > div {
-            background: #135bec;
+            background: #059669;
         }
         
         /* Info box styling */
         .stAlert {
-            background: #1c1f27;
-            border: 1px solid #282e39;
+            background: #f0fdf4;
+            border: 1px solid #bbf7d0;
             border-radius: 8px;
-            color: #9da6b9;
+            color: #166534;
         }
         
         /* Expander styling */
         .streamlit-expanderHeader {
-            background: #1c1f27;
+            background: #ffffff;
             border-radius: 8px;
-            border: 1px solid #282e39;
-            color: #ffffff;
+            border: 1px solid #e5e7eb;
+            color: #111827;
         }
         
         /* Sidebar header */
         .sidebar-header {
-            color: #ffffff;
+            color: #111827;
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid #282e39;
+            border-bottom: 1px solid #e5e7eb;
         }
         
         /* Algorithm info card */
         .algo-info {
-            background: #1c1f27;
-            border: 1px solid #282e39;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 1rem;
             margin-top: 1rem;
         }
         
         .algo-info h4 {
-            color: #ffffff;
+            color: #059669;
             margin-bottom: 0.5rem;
             font-weight: 600;
         }
         
         .algo-info p {
-            color: #9da6b9;
+            color: #4b5563;
             font-size: 0.875rem;
             line-height: 1.5;
         }
         
         /* Success message */
         .success-msg {
-            background: rgba(5, 150, 105, 0.1);
-            color: #34d399;
+            background: #ecfdf5;
+            color: #059669;
             padding: 0.75rem 1rem;
             border-radius: 8px;
-            border: 1px solid rgba(5, 150, 105, 0.2);
+            border: 1px solid #a7f3d0;
             text-align: center;
             margin: 1rem 0;
             font-size: 0.875rem;
+            font-weight: 500;
         }
         
         /* Metric styling */
         [data-testid="stMetric"] {
-            background: #1c1f27;
-            border: 1px solid #282e39;
+            background: #ffffff;
+            border: 1px solid #e5e7eb;
             border-radius: 8px;
             padding: 1rem;
         }
         
         /* Custom headers */
         h1, h2, h3 {
-            color: #ffffff !important;
+            color: #111827 !important;
             font-weight: 700 !important;
         }
         
         p, label {
-            color: #9da6b9 !important;
+            color: #4b5563 !important;
         }
     </style>
     """, unsafe_allow_html=True)
@@ -559,36 +560,36 @@ def convert_image_for_download(image_array: np.ndarray) -> bytes:
 ALGORITHM_INFO = {
     'Sobel': {
         'name': 'Sobel Operator',
-        'description': 'Uses 3×3 kernels to compute gradient approximation. Emphasizes center pixels with weight 2. Good for detecting horizontal and vertical edges.',
+        'description': 'Operator Sobel menggunakan dua kernel 3x3 untuk menghitung pendekatan gradien turunan intensitas gambar. Operator ini memberikan bobot lebih pada piksel di tengah (bobot 2), sehingga sedikit lebih tahan terhadap noise dibandingkan operator sederhana lainnya. Sangat baik untuk mendeteksi tepi vertikal dan horizontal.',
         'kernel_x': '[[-1, 0, 1], [-2, 0, 2], [-1, 0, 1]]',
         'kernel_y': '[[-1, -2, -1], [0, 0, 0], [1, 2, 1]]'
     },
     'Roberts': {
         'name': 'Roberts Cross Operator',
-        'description': 'Uses 2×2 kernels for diagonal edge detection. One of the earliest edge detectors. Simple but sensitive to noise.',
+        'description': 'Operator Roberts Cross adalah salah satu algoritma deteksi tepi paling awal. Menggunakan kernel 2x2 kecil yang diputar 45 derajat. Sangat cepat dikomputasi tetapi sangat sensitif terhadap noise karena ukuran kernelnya yang kecil. Cocok untuk gambar dengan noise rendah dan tepi yang tajam.',
         'kernel_x': '[[1, 0], [0, -1]]',
         'kernel_y': '[[0, 1], [-1, 0]]'
     },
     'Prewitt': {
         'name': 'Prewitt Operator',
-        'description': 'Uses 3×3 kernels with uniform weights. Less sensitive to noise than Roberts but also less accurate for edge localization.',
+        'description': 'Operator Prewitt mirip dengan Sobel tetapi menggunakan bobot seragam (1) pada kernelnya. Ini membuatnya sedikit kurang sensitif terhadap noise dibandingkan Roberts, tetapi deteksi tepinya mungkin tidak setajam Sobel. Sering digunakan untuk mendeteksi tepi vertikal dan horizontal.',
         'kernel_x': '[[-1, 0, 1], [-1, 0, 1], [-1, 0, 1]]',
         'kernel_y': '[[1, 1, 1], [0, 0, 0], [-1, -1, -1]]'
     },
     'Laplacian': {
         'name': 'Laplacian Operator',
-        'description': 'Second-order derivative operator. Detects edges in all directions by finding zero-crossings. Sensitive to noise.',
+        'description': 'Operator Laplacian menggunakan turunan kedua dari intensitas gambar. Berbeda dengan operator lain yang mencari nilai maksimum gradien, Laplacian mencari "zero-crossings" (titik di mana turunan kedua bernilai nol). Ini mendeteksi tepi ke segala arah sekaligus, tetapi sangat sensitif terhadap noise.',
         'kernel': '[[0, 1, 0], [1, -4, 1], [0, 1, 0]]'
     },
     'Frei-Chen': {
         'name': 'Frei-Chen Operator',
-        'description': 'Similar to Sobel but uses √2 for better isotropy. Provides more uniform response to edges at different orientations.',
+        'description': 'Operator Frei-Chen mirip dengan Sobel tetapi menggunakan akar 2 (√2) sebagai bobot di tengah, bukan 2. Bobot ini dipilih untuk memberikan respons yang lebih seragam (isotropik) terhadap tepi di segala arah sudut, sehingga deteksi tepi lebih halus dan akurat secara geometris.',
         'kernel_x': '[[-1, 0, 1], [-√2, 0, √2], [-1, 0, 1]]',
         'kernel_y': '[[-1, -√2, -1], [0, 0, 0], [1, √2, 1]]'
     },
     'Canny': {
         'name': 'Canny Edge Detector',
-        'description': 'Multi-stage algorithm: Gaussian smoothing → Gradient calculation → Non-max suppression → Double thresholding → Edge tracking by hysteresis.',
+        'description': 'Algoritma Canny dianggap sebagai standar emas dalam deteksi tepi. Ini adalah metode multi-tahap: (1) Reduksi noise dengan Gaussian, (2) Perhitungan gradien, (3) Non-maximum suppression untuk menipiskan tepi, dan (4) Hysteresis thresholding untuk menyambungkan tepi yang lemah ke tepi yang kuat. Menghasilkan garis tepi yang tipis dan bersih.',
         'parameters': 'Low Threshold, High Threshold'
     }
 }
@@ -661,6 +662,11 @@ def main():
         
         # Process button
         detect_btn = st.button("Detect Edges", use_container_width=True)
+        
+        # Reset button
+        if st.button("Reset App", use_container_width=True):
+            st.session_state.clear()
+            st.rerun()
         
         # Algorithm info expander
         st.markdown("---")
