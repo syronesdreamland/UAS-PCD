@@ -196,9 +196,9 @@ def inject_custom_css(theme='light'):
         }}
         
         /* Slider styling */
-        .stSlider > div > div {
+        .stSlider > div > div {{
             /* background: {primary_color}; Removed to fix visibility issue */
-        }
+        }}
         
         /* Info box styling */
         .stAlert {{
