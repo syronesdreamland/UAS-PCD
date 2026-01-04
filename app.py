@@ -13,7 +13,7 @@ def main():
     # Set page configuration
     st.set_page_config(
         page_title="Aplikasi Deteksi Tepi & Morfologi",
-        page_icon="🖼️",
+        page_icon="???",
         layout="wide",
         initial_sidebar_state="expanded"
     )
@@ -22,11 +22,14 @@ def main():
     inject_custom_css()
     
     # Main header
-    st.title("🖼️ Analisis Citra Digital: Deteksi Tepi & Morfologi")
+    st.title("??? Analisis Citra Digital: Deteksi Tepi & Morfologi")
     st.markdown("""
     Aplikasi ini mendemonstrasikan berbagai algoritma **Deteksi Tepi (Edge Detection)** dan **Operasi Morfologi** 
     yang umum digunakan dalam Pengolahan Citra Digital. Unggah gambar Anda dan eksperimen dengan berbagai operator!
     """)
+    
+    # Render sidebar controls
+    params = render_controls()
     
     # Main content area
     col1, col2 = st.columns(2)
@@ -43,10 +46,6 @@ def main():
             
             # Image info
             st.info(f"Dimensi: {image.size[0]}x{image.size[1]} piksel | Mode: {image.mode}")
-            
-        st.markdown("---")
-        # Render controls in the main area (Col 1)
-        params = render_controls(st)
     
     # Process image if uploaded
     with col2:
@@ -54,30 +53,30 @@ def main():
         
         if uploaded_file is not None:
             if st.button("Proses Gambar", type="primary"):
-                with st.spinner(f"Menerapkan algoritma {params['algorithm']}..."):
+                with st.spinner(f"Menerapkan algoritma {params["algorithm"]}..."):
                     try:
                         # Extract parameters based on selected algorithm
-                        canny_low = params.get('canny_low', 50)
-                        canny_high = params.get('canny_high', 150)
-                        kernel_size = params.get('kernel_size', 3)
+                        canny_low = params.get("canny_low", 50)
+                        canny_high = params.get("canny_high", 150)
+                        kernel_size = params.get("kernel_size", 3)
                         
                         # Process the image
                         result_image = process_image(
                             image, 
-                            params['algorithm'], 
+                            params["algorithm"], 
                             canny_low, 
                             canny_high,
                             kernel_size
                         )
                         
                         # Display result
-                        st.image(result_image, caption=f"Hasil: {params['algorithm']}", use_column_width=True)
+                        st.image(result_image, caption=f"Hasil: {params["algorithm"]}", use_column_width=True)
                         
                         # Download button
                         st.download_button(
-                            label="⬇️ Unduh Hasil",
+                            label="?? Unduh Hasil",
                             data=convert_image_for_download(result_image),
-                            file_name=f"hasil_{params['algorithm'].lower().replace(' ', '_')}.png",
+                            file_name=f"hasil_{params["algorithm"].lower().replace(" ", "_")}.png",
                             mime="image/png"
                         )
                         
@@ -86,7 +85,7 @@ def main():
                     except Exception as e:
                         st.error(f"Terjadi kesalahan: {str(e)}")
             else:
-                st.info("Klik tombol 'Proses Gambar' untuk melihat hasil.")
+                st.info("Klik tombol \"Proses Gambar\" untuk melihat hasil.")
         else:
             st.warning("Silakan unggah gambar terlebih dahulu di panel sebelah kiri.")
 
@@ -94,7 +93,7 @@ def main():
     st.markdown("---")
     st.markdown(
         """
-        <div style='text-align: center'>
+        <div style="text-align: center">
             <p>Dibuat untuk Praktikum Pengolahan Citra Digital</p>
         </div>
         """, 
