@@ -196,9 +196,7 @@ def inject_custom_css(theme='light'):
         }}
         
         /* Slider styling */
-        .stSlider > div > div {{
-            /* background: {primary_color}; Removed to fix visibility issue */
-        }}
+        /* Removed custom slider styling to prevent conflicts */
         
         /* Info box styling */
         .stAlert {{
@@ -567,8 +565,16 @@ def apply_region_filling(gray_image: np.ndarray) -> np.ndarray:
     Apply Region Filling (Hole Filling).
     Fills holes in the image. Works best on binary images.
     """
-    # Threshold to binary
-    _, binary = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+    # Apply Gaussian blur to reduce noise
+    blurred = cv2.GaussianBlur(gray_image, (5, 5), 0)
+    
+    # Threshold to binary using Otsu's method
+    _, binary = cv2.threshold(blurred, 0, 255, cv2.THRESH_BINARY + cv2.THRESH_OTSU)
+    
+    # Check if background is white (assuming top-left corner is background)
+    # If background is white (255), invert the image so background becomes black (0)
+    if binary[0, 0] == 255:
+        binary = cv2.bitwise_not(binary)
     
     # Copy the binary image
     im_floodfill = binary.copy()
