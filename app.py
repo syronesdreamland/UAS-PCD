@@ -132,8 +132,8 @@ def inject_custom_css(theme='light'):
         /* Button styling */
         .stButton > button {{
             width: 100%;
-            background-color: {primary_color};
-            color: white;
+            background-color: {primary_color} !important;
+            color: #ffffff !important;
             border: none;
             border-radius: 8px;
             padding: 0.75rem 1.5rem;
@@ -141,12 +141,17 @@ def inject_custom_css(theme='light'):
             font-size: 0.875rem;
             transition: all 0.2s ease;
             box-shadow: 0 4px 6px -1px {primary_color}33, 0 2px 4px -1px {primary_color}1a;
-        }}
+        }
         
-        .stButton > button:hover {{
-            background-color: {primary_hover};
+        .stButton > button:hover {
+            background-color: {primary_hover} !important;
+            color: #ffffff !important;
             box-shadow: 0 10px 15px -3px {primary_color}66, 0 4px 6px -2px {primary_color}33;
             transform: translateY(-1px);
+        }
+        
+        .stButton > button p {
+            color: #ffffff !important;
         }}
         
         /* Download button styling */
@@ -527,8 +532,67 @@ def apply_canny_edge_detection(gray_image: np.ndarray,
     return output
 
 
+def apply_dilation(gray_image: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    """Apply Dilation morphological operation."""
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    return cv2.dilate(gray_image, kernel, iterations=1)
+
+
+def apply_erosion(gray_image: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    """Apply Erosion morphological operation."""
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    return cv2.erode(gray_image, kernel, iterations=1)
+
+
+def apply_opening(gray_image: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    """Apply Opening morphological operation (Erosion followed by Dilation)."""
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    return cv2.morphologyEx(gray_image, cv2.MORPH_OPEN, kernel)
+
+
+def apply_closing(gray_image: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    """Apply Closing morphological operation (Dilation followed by Erosion)."""
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    return cv2.morphologyEx(gray_image, cv2.MORPH_CLOSE, kernel)
+
+
+def apply_morphological_gradient(gray_image: np.ndarray, kernel_size: int = 3) -> np.ndarray:
+    """Apply Morphological Gradient (Difference between Dilation and Erosion)."""
+    kernel = np.ones((kernel_size, kernel_size), np.uint8)
+    return cv2.morphologyEx(gray_image, cv2.MORPH_GRADIENT, kernel)
+
+
+def apply_region_filling(gray_image: np.ndarray) -> np.ndarray:
+    """
+    Apply Region Filling (Hole Filling).
+    Fills holes in the image. Works best on binary images.
+    """
+    # Threshold to binary
+    _, binary = cv2.threshold(gray_image, 127, 255, cv2.THRESH_BINARY)
+    
+    # Copy the binary image
+    im_floodfill = binary.copy()
+    
+    # Mask used to flood filling.
+    # Notice the size needs to be 2 pixels larger than the image.
+    h, w = binary.shape[:2]
+    mask = np.zeros((h+2, w+2), np.uint8)
+    
+    # Floodfill from point (0, 0)
+    cv2.floodFill(im_floodfill, mask, (0,0), 255)
+    
+    # Invert floodfilled image
+    im_floodfill_inv = cv2.bitwise_not(im_floodfill)
+    
+    # Combine the two images to get the foreground
+    im_out = binary | im_floodfill_inv
+    
+    return im_out
+
+
 def process_image(image: Image.Image, algorithm: str, 
-                  canny_low: int = 50, canny_high: int = 150) -> np.ndarray:
+                  canny_low: int = 50, canny_high: int = 150,
+                  kernel_size: int = 3) -> np.ndarray:
     """
     Main image processing function that applies the selected edge detection algorithm.
     
@@ -544,6 +608,7 @@ def process_image(image: Image.Image, algorithm: str,
         algorithm: Name of the edge detection algorithm to apply
         canny_low: Low threshold for Canny (only used if algorithm is 'Canny')
         canny_high: High threshold for Canny (only used if algorithm is 'Canny')
+        kernel_size: Kernel size for morphological operations
         
     Returns:
         Edge-detected image as uint8 numpy array (0-255)
@@ -558,7 +623,11 @@ def process_image(image: Image.Image, algorithm: str,
     gray = cv2.cvtColor(img_array, cv2.COLOR_RGB2GRAY)
     
     # Apply Gaussian blur for noise reduction (improves edge detection quality)
-    gray = cv2.GaussianBlur(gray, (3, 3), 0)
+    # Only apply blur for edge detection algorithms, not necessarily for morphology if we want raw effect
+    # But for consistency and noise reduction, we'll keep it, or maybe make it optional.
+    # For now, let's keep it as it helps with most operations.
+    if algorithm not in ['Region Filling']: # Region filling needs binary, blur might affect thresholding slightly but usually ok.
+        gray = cv2.GaussianBlur(gray, (3, 3), 0)
     
     # Dictionary mapping algorithm names to their functions
     algorithm_map = {
@@ -567,11 +636,22 @@ def process_image(image: Image.Image, algorithm: str,
         'Prewitt': apply_prewitt_edge_detection,
         'Laplacian': apply_laplacian_edge_detection,
         'Frei-Chen': apply_frei_chen_edge_detection,
+        'Region Filling': apply_region_filling
+    }
+    
+    morphology_map = {
+        'Dilation': apply_dilation,
+        'Erosion': apply_erosion,
+        'Opening': apply_opening,
+        'Closing': apply_closing,
+        'Morphological Gradient': apply_morphological_gradient
     }
     
     # Apply the selected algorithm
     if algorithm == 'Canny':
         output = apply_canny_edge_detection(gray, canny_low, canny_high)
+    elif algorithm in morphology_map:
+        output = morphology_map[algorithm](gray, kernel_size)
     elif algorithm in algorithm_map:
         output = algorithm_map[algorithm](gray)
     else:
@@ -642,6 +722,36 @@ ALGORITHM_INFO = {
         'name': 'Canny Edge Detector',
         'description': 'Algoritma Canny dianggap sebagai standar emas dalam deteksi tepi. Ini adalah metode multi-tahap: (1) Reduksi noise dengan Gaussian, (2) Perhitungan gradien, (3) Non-maximum suppression untuk menipiskan tepi, dan (4) Hysteresis thresholding untuk menyambungkan tepi yang lemah ke tepi yang kuat. Menghasilkan garis tepi yang tipis dan bersih.',
         'parameters': 'Low Threshold, High Threshold'
+    },
+    'Dilation': {
+        'name': 'Dilation (Dilasi)',
+        'description': 'Operasi morfologi yang menambah piksel pada batas objek dalam gambar. Efeknya adalah memperbesar area objek yang terang dan mengecilkan area gelap (lubang). Berguna untuk menyambungkan bagian objek yang terputus.',
+        'parameters': 'Kernel Size'
+    },
+    'Erosion': {
+        'name': 'Erosion (Erosi)',
+        'description': 'Kebalikan dari dilasi, erosi mengikis piksel pada batas objek. Efeknya adalah memperkecil area objek yang terang dan memperbesar lubang. Berguna untuk menghilangkan noise kecil (bintik putih) di latar belakang gelap.',
+        'parameters': 'Kernel Size'
+    },
+    'Opening': {
+        'name': 'Opening',
+        'description': 'Kombinasi erosi diikuti oleh dilasi. Berguna untuk menghilangkan noise kecil (bintik terang) dari latar belakang gelap sambil tetap mempertahankan bentuk dan ukuran objek utama.',
+        'parameters': 'Kernel Size'
+    },
+    'Closing': {
+        'name': 'Closing',
+        'description': 'Kombinasi dilasi diikuti oleh erosi. Berguna untuk menutup lubang kecil di dalam objek terang atau menyambungkan komponen yang berdekatan.',
+        'parameters': 'Kernel Size'
+    },
+    'Morphological Gradient': {
+        'name': 'Morphological Gradient',
+        'description': 'Perbedaan antara hasil dilasi dan erosi dari sebuah gambar. Hasilnya tampak seperti outline atau tepi dari objek. Sangat berguna untuk deteksi tepi morfologis.',
+        'parameters': 'Kernel Size'
+    },
+    'Region Filling': {
+        'name': 'Region Filling (Hole Filling)',
+        'description': 'Algoritma untuk mengisi lubang tertutup di dalam objek. Bekerja dengan mengidentifikasi area gelap yang dikelilingi sepenuhnya oleh area terang dan mengisinya menjadi terang.',
+        'parameters': 'None'
     }
 }
 
@@ -674,14 +784,17 @@ def render_controls(key_suffix=""):
     with col_algo:
         algorithm = st.radio(
             "Choose Operator:",
-            options=['Sobel', 'Roberts', 'Prewitt', 'Laplacian', 'Frei-Chen', 'Canny'],
-            help="Select the edge detection algorithm to apply",
+            options=['Sobel', 'Roberts', 'Prewitt', 'Laplacian', 'Frei-Chen', 'Canny', 
+                     'Dilation', 'Erosion', 'Opening', 'Closing', 'Morphological Gradient', 'Region Filling'],
+            help="Select the edge detection or morphological algorithm to apply",
             key=f"algo_{key_suffix}",
             horizontal=True
         )
     
-    # Canny-specific parameters
+    # Parameters
     canny_low, canny_high = 50, 150
+    kernel_size = 3
+    
     with col_params:
         if algorithm == 'Canny':
             st.markdown("**Canny Parameters**")
@@ -702,6 +815,17 @@ def render_controls(key_suffix=""):
                     value=150,
                     key=f"high_{key_suffix}"
                 )
+        elif algorithm in ['Dilation', 'Erosion', 'Opening', 'Closing', 'Morphological Gradient']:
+            st.markdown("**Morphology Parameters**")
+            kernel_size = st.slider(
+                "Kernel Size",
+                min_value=3,
+                max_value=21,
+                value=3,
+                step=2,
+                help="Size of the structuring element (odd number)",
+                key=f"kernel_{key_suffix}"
+            )
         else:
             # Show info about selected algorithm
             info = ALGORITHM_INFO[algorithm]
@@ -710,13 +834,14 @@ def render_controls(key_suffix=""):
     st.markdown("---")
     
     # Process button
-    detect_btn = st.button("Detect Edges", use_container_width=True, type="primary", key=f"btn_{key_suffix}")
+    detect_btn = st.button("Detect Edges / Apply Filter", use_container_width=True, key=f"btn_{key_suffix}")
     
     return {
         "uploaded_file": uploaded_file,
         "algorithm": algorithm,
         "canny_low": canny_low,
         "canny_high": canny_high,
+        "kernel_size": kernel_size,
         "detect_btn": detect_btn
     }
 
@@ -764,6 +889,7 @@ def main():
     algorithm = controls['algorithm']
     canny_low = controls['canny_low']
     canny_high = controls['canny_high']
+    kernel_size = controls['kernel_size']
     detect_btn = controls['detect_btn']
 
     # ========================================================================
@@ -794,7 +920,7 @@ def main():
         if detect_btn or 'result_image' in st.session_state:
             if detect_btn:
                 with st.spinner("Processing..."):
-                    result_image = process_image(image, algorithm, canny_low, canny_high)
+                    result_image = process_image(image, algorithm, canny_low, canny_high, kernel_size)
                     st.session_state['result_image'] = result_image
                     st.session_state['algorithm_used'] = algorithm
             
@@ -813,12 +939,12 @@ def main():
                     st.download_button(
                         label="Download Result",
                         data=result_bytes,
-                        file_name=f"edge_detection_{st.session_state.get('algorithm_used', algorithm).lower()}.png",
+                        file_name=f"processed_{st.session_state.get('algorithm_used', algorithm).lower()}.png",
                         mime="image/png",
                         use_container_width=True
                     )
                     
-                    st.markdown('<div class="success-msg">Edge detection completed successfully.</div>', 
+                    st.markdown('<div class="success-msg">Processing completed successfully.</div>', 
                                unsafe_allow_html=True)
         else:
             with col2:
@@ -827,7 +953,7 @@ def main():
                     <div class="image-card-title">Result</div>
                 </div>
                 """, unsafe_allow_html=True)
-                st.info("Click 'Detect Edges' button above to process the image.")
+                st.info("Click 'Detect Edges / Apply Filter' button above to process the image.")
     
     else:
         # Show instruction when no image is uploaded
