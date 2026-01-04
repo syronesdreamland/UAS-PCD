@@ -1,0 +1,13 @@
+# Requirements for Digital Image Edge Detection Application
+# ========================================================
+# Install all dependencies with: pip install -r requirements.txt
+
+# Web Framework
+streamlit>=1.28.0
+
+# Image Processing
+opencv-python>=4.8.0
+numpy>=1.24.0
+
+# Image handling
+Pillow>=10.0.0
