@@ -28,9 +28,6 @@ def main():
     yang umum digunakan dalam Pengolahan Citra Digital. Unggah gambar Anda dan eksperimen dengan berbagai operator!
     """)
     
-    # Render sidebar controls
-    params = render_controls()
-    
     # Main content area
     col1, col2 = st.columns(2)
     
@@ -46,6 +43,10 @@ def main():
             
             # Image info
             st.info(f"Dimensi: {image.size[0]}x{image.size[1]} piksel | Mode: {image.mode}")
+            
+        st.markdown("---")
+        # Render controls in the main area (Col 1)
+        params = render_controls(st)
     
     # Process image if uploaded
     with col2:
