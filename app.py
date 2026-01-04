@@ -196,9 +196,9 @@ def inject_custom_css(theme='light'):
         }}
         
         /* Slider styling */
-        .stSlider > div > div {{
-            background: {primary_color};
-        }}
+        .stSlider > div > div {
+            /* background: {primary_color}; Removed to fix visibility issue */
+        }
         
         /* Info box styling */
         .stAlert {{
@@ -817,6 +817,15 @@ def render_controls(key_suffix=""):
                 )
         elif algorithm in ['Dilation', 'Erosion', 'Opening', 'Closing', 'Morphological Gradient']:
             st.markdown("**Morphology Parameters**")
+            
+            # Show info about selected algorithm
+            info = ALGORITHM_INFO[algorithm]
+            st.markdown(f"""
+            <div style="background-color: rgba(5, 150, 105, 0.1); padding: 1rem; border-radius: 8px; margin-bottom: 1rem; border: 1px solid rgba(5, 150, 105, 0.2);">
+                <p style="margin: 0; font-size: 0.9rem; color: inherit;"><strong>{info['name']}</strong>: {info['description']}</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
             kernel_size = st.slider(
                 "Kernel Size",
                 min_value=3,
@@ -829,7 +838,11 @@ def render_controls(key_suffix=""):
         else:
             # Show info about selected algorithm
             info = ALGORITHM_INFO[algorithm]
-            st.info(f"**{info['name']}**: {info['description']}")
+            st.markdown(f"""
+            <div style="background-color: rgba(5, 150, 105, 0.1); padding: 1rem; border-radius: 8px; border: 1px solid rgba(5, 150, 105, 0.2);">
+                <p style="margin: 0; font-size: 0.9rem; color: inherit;"><strong>{info['name']}</strong>: {info['description']}</p>
+            </div>
+            """, unsafe_allow_html=True)
 
     st.markdown("---")
     
