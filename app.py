@@ -19,94 +19,120 @@ import io
 # CUSTOM CSS STYLING
 # ============================================================================
 
-def inject_custom_css():
+def inject_custom_css(theme='light'):
     """
     Inject custom CSS to style the Streamlit application.
-    Removes default header/footer and applies modern light theme styling (White & Green).
+    Handles both Light and Dark themes.
     """
-    st.markdown("""
+    # Define colors based on theme
+    if theme == 'dark':
+        bg_color = "#101622"
+        sidebar_bg = "#0d121c"
+        card_bg = "#1c1f27"
+        text_color = "#ffffff"
+        subtext_color = "#9da6b9"
+        border_color = "#282e39"
+        primary_color = "#135bec"
+        primary_hover = "#1d4ed8"
+        success_bg = "rgba(5, 150, 105, 0.1)"
+        success_text = "#34d399"
+        success_border = "rgba(5, 150, 105, 0.2)"
+    else:  # light
+        bg_color = "#ffffff"
+        sidebar_bg = "#f8fafc"
+        card_bg = "#ffffff"
+        text_color = "#1f2937"
+        subtext_color = "#6b7280"
+        border_color = "#e5e7eb"
+        primary_color = "#059669"
+        primary_hover = "#047857"
+        success_bg = "#ecfdf5"
+        success_text = "#059669"
+        success_border = "#a7f3d0"
+
+    st.markdown(f"""
     <style>
         /* Import Inter font */
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
 
         /* Global settings */
-        html, body, [class*="css"] {
+        html, body, [class*="css"] {{
             font-family: 'Inter', sans-serif;
-            color: #1f2937;
-        }
+            color: {text_color};
+        }}
 
         /* Hide Streamlit default elements */
-        #MainMenu {visibility: hidden;}
-        footer {visibility: hidden;}
-        header {visibility: hidden;}
+        #MainMenu {{visibility: hidden;}}
+        footer {{visibility: hidden;}}
+        header {{visibility: hidden;}}
         
         /* Main container styling */
-        .stApp {
-            background-color: #ffffff;
-        }
+        .stApp {{
+            background-color: {bg_color};
+        }}
         
-        .main .block-container {
+        .main .block-container {{
             padding-top: 2rem;
             padding-bottom: 2rem;
             max-width: 1280px;
-        }
+        }}
         
         /* Sidebar styling */
-        [data-testid="stSidebar"] {
-            background-color: #f8fafc;
-            border-right: 1px solid #e5e7eb;
-        }
+        [data-testid="stSidebar"] {{
+            background-color: {sidebar_bg};
+            border-right: 1px solid {border_color};
+        }}
         
-        [data-testid="stSidebar"] .block-container {
+        [data-testid="stSidebar"] .block-container {{
             padding-top: 2rem;
-        }
+        }}
         
         /* Title styling */
-        .main-title {
-            color: #111827;
+        .main-title {{
+            color: {text_color};
             font-size: 3rem;
             font-weight: 900;
             text-align: center;
             margin-bottom: 0.5rem;
             letter-spacing: -0.025em;
-        }
+        }}
         
-        .main-title span {
-            color: #059669; /* Emerald 600 */
-        }
+        .main-title span {{
+            color: {primary_color};
+        }}
         
-        .subtitle {
-            color: #6b7280;
+        .subtitle {{
+            color: {subtext_color};
             text-align: center;
             font-size: 1.125rem;
             margin-bottom: 3rem;
             font-weight: 400;
-        }
+        }}
         
         /* Card styling for image containers */
-        .image-card {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+        .image-card {{
+            background: {card_bg};
+            border: 1px solid {border_color};
             border-radius: 12px;
             padding: 1rem;
             margin-bottom: 1rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
-        }
+        }}
         
-        .image-card-title {
-            color: #111827;
+        .image-card-title {{
+            color: {text_color};
             font-size: 1rem;
             font-weight: 600;
             margin-bottom: 0.5rem;
             display: flex;
             align-items: center;
             gap: 0.5rem;
-        }
+        }}
         
         /* Button styling */
-        .stButton > button {
+        .stButton > button {{
             width: 100%;
-            background-color: #059669; /* Emerald 600 */
+            background-color: {primary_color};
             color: white;
             border: none;
             border-radius: 8px;
@@ -114,138 +140,163 @@ def inject_custom_css():
             font-weight: 600;
             font-size: 0.875rem;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 6px -1px rgba(5, 150, 105, 0.2), 0 2px 4px -1px rgba(5, 150, 105, 0.1);
-        }
+            box-shadow: 0 4px 6px -1px {primary_color}33, 0 2px 4px -1px {primary_color}1a;
+        }}
         
-        .stButton > button:hover {
-            background-color: #047857; /* Emerald 700 */
-            box-shadow: 0 10px 15px -3px rgba(5, 150, 105, 0.3), 0 4px 6px -2px rgba(5, 150, 105, 0.2);
+        .stButton > button:hover {{
+            background-color: {primary_hover};
+            box-shadow: 0 10px 15px -3px {primary_color}66, 0 4px 6px -2px {primary_color}33;
             transform: translateY(-1px);
-        }
+        }}
         
         /* Download button styling */
-        .stDownloadButton > button {
+        .stDownloadButton > button {{
             width: 100%;
-            background-color: #ffffff;
-            color: #059669;
-            border: 1px solid #059669;
+            background-color: {card_bg};
+            color: {primary_color};
+            border: 1px solid {primary_color};
             border-radius: 8px;
             padding: 0.75rem 1.5rem;
             font-weight: 600;
             font-size: 0.875rem;
             transition: all 0.2s ease;
-        }
+        }}
         
-        .stDownloadButton > button:hover {
-            background-color: #ecfdf5;
-            color: #047857;
-        }
+        .stDownloadButton > button:hover {{
+            background-color: {bg_color};
+            color: {primary_hover};
+        }}
         
         /* Radio button styling */
-        .stRadio > div {
+        .stRadio > div {{
             background: transparent;
             padding: 0;
-        }
+        }}
         
-        .stRadio > div > label {
-            color: #374151 !important;
-        }
+        .stRadio > div > label {{
+            color: {text_color} !important;
+        }}
         
         /* File uploader styling */
-        [data-testid="stFileUploader"] {
-            background: #ffffff;
-            border: 1px dashed #d1d5db;
+        [data-testid="stFileUploader"] {{
+            background: {card_bg};
+            border: 1px dashed {border_color};
             border-radius: 12px;
             padding: 2rem;
-        }
+        }}
         
-        [data-testid="stFileUploader"]:hover {
-            border-color: #059669;
-            background: #f9fafb;
-        }
+        [data-testid="stFileUploader"]:hover {{
+            border-color: {primary_color};
+            background: {card_bg};
+        }}
         
         /* Slider styling */
-        .stSlider > div > div {
-            background: #059669;
-        }
+        .stSlider > div > div {{
+            background: {primary_color};
+        }}
         
         /* Info box styling */
-        .stAlert {
-            background: #f0fdf4;
-            border: 1px solid #bbf7d0;
+        .stAlert {{
+            background: {card_bg};
+            border: 1px solid {border_color};
             border-radius: 8px;
-            color: #166534;
-        }
+            color: {subtext_color};
+        }}
         
         /* Expander styling */
-        .streamlit-expanderHeader {
-            background: #ffffff;
+        .streamlit-expanderHeader {{
+            background: {card_bg};
             border-radius: 8px;
-            border: 1px solid #e5e7eb;
-            color: #111827;
-        }
+            border: 1px solid {border_color};
+            color: {text_color};
+        }}
         
         /* Sidebar header */
-        .sidebar-header {
-            color: #111827;
+        .sidebar-header {{
+            color: {text_color};
             font-size: 1.25rem;
             font-weight: 700;
             margin-bottom: 1.5rem;
             padding-bottom: 1rem;
-            border-bottom: 1px solid #e5e7eb;
-        }
+            border-bottom: 1px solid {border_color};
+        }}
         
         /* Algorithm info card */
-        .algo-info {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+        .algo-info {{
+            background: {card_bg};
+            border: 1px solid {border_color};
             border-radius: 8px;
             padding: 1rem;
             margin-top: 1rem;
-        }
+        }}
         
-        .algo-info h4 {
-            color: #059669;
+        .algo-info h4 {{
+            color: {primary_color};
             margin-bottom: 0.5rem;
             font-weight: 600;
-        }
+        }}
         
-        .algo-info p {
-            color: #4b5563;
+        .algo-info p {{
+            color: {subtext_color};
             font-size: 0.875rem;
             line-height: 1.5;
-        }
+        }}
         
         /* Success message */
-        .success-msg {
-            background: #ecfdf5;
-            color: #059669;
+        .success-msg {{
+            background: {success_bg};
+            color: {success_text};
             padding: 0.75rem 1rem;
             border-radius: 8px;
-            border: 1px solid #a7f3d0;
+            border: 1px solid {success_border};
             text-align: center;
             margin: 1rem 0;
             font-size: 0.875rem;
             font-weight: 500;
-        }
+        }}
         
         /* Metric styling */
-        [data-testid="stMetric"] {
-            background: #ffffff;
-            border: 1px solid #e5e7eb;
+        [data-testid="stMetric"] {{
+            background: {card_bg};
+            border: 1px solid {border_color};
             border-radius: 8px;
             padding: 1rem;
-        }
+        }}
         
         /* Custom headers */
-        h1, h2, h3 {
-            color: #111827 !important;
+        h1, h2, h3 {{
+            color: {text_color} !important;
             font-weight: 700 !important;
-        }
+        }}
         
-        p, label {
-            color: #4b5563 !important;
-        }
+        p, label {{
+            color: {subtext_color} !important;
+        }}
+        
+        /* Helper classes for dynamic styling */
+        .dynamic-card {{
+            background: {card_bg};
+            border: 1px solid {border_color};
+            border-radius: 12px;
+            padding: 1rem;
+        }}
+        
+        .dynamic-text {{
+            color: {text_color};
+        }}
+        
+        .dynamic-subtext {{
+            color: {subtext_color};
+        }}
+        
+        .upload-instruction {{
+            background: {card_bg};
+            border: 1px dashed {border_color};
+            border-radius: 16px;
+            padding: 3rem;
+            text-align: center;
+            margin: 2rem 0;
+        }}
     </style>
     """, unsafe_allow_html=True)
 
@@ -599,6 +650,66 @@ ALGORITHM_INFO = {
 # STREAMLIT APPLICATION
 # ============================================================================
 
+def render_controls(key_suffix=""):
+    """
+    Render the control panel widgets.
+    Returns a dictionary of user inputs.
+    """
+    # File uploader
+    st.markdown("### Upload Image")
+    uploaded_file = st.file_uploader(
+        "Choose an image file",
+        type=['jpg', 'png', 'jpeg'],
+        help="Supported formats: JPG, PNG, JPEG",
+        key=f"uploader_{key_suffix}"
+    )
+    
+    st.markdown("---")
+    
+    # Algorithm selection
+    st.markdown("### Edge Detection Algorithm")
+    algorithm = st.radio(
+        "Choose Operator:",
+        options=['Sobel', 'Roberts', 'Prewitt', 'Laplacian', 'Frei-Chen', 'Canny'],
+        help="Select the edge detection algorithm to apply",
+        key=f"algo_{key_suffix}"
+    )
+    
+    # Canny-specific parameters
+    canny_low, canny_high = 50, 150
+    if algorithm == 'Canny':
+        st.markdown("---")
+        st.markdown("### Canny Parameters")
+        canny_low = st.slider(
+            "Low Threshold",
+            min_value=0,
+            max_value=255,
+            value=50,
+            help="Edges with gradient below this are discarded",
+            key=f"low_{key_suffix}"
+        )
+        canny_high = st.slider(
+            "High Threshold",
+            min_value=0,
+            max_value=255,
+            value=150,
+            help="Edges with gradient above this are strong edges",
+            key=f"high_{key_suffix}"
+        )
+    
+    st.markdown("---")
+    
+    # Process button
+    detect_btn = st.button("Detect Edges", use_container_width=True, key=f"btn_{key_suffix}")
+    
+    return {
+        "uploaded_file": uploaded_file,
+        "algorithm": algorithm,
+        "canny_low": canny_low,
+        "canny_high": canny_high,
+        "detect_btn": detect_btn
+    }
+
 def main():
     """Main function to run the Streamlit application."""
     
@@ -609,8 +720,12 @@ def main():
         initial_sidebar_state="expanded"
     )
     
-    # Inject custom CSS
-    inject_custom_css()
+    # Initialize session state for theme
+    if 'theme' not in st.session_state:
+        st.session_state.theme = 'light'
+    
+    # Inject custom CSS based on current theme
+    inject_custom_css(st.session_state.theme)
     
     # ========================================================================
     # SIDEBAR - Control Panel
@@ -619,49 +734,26 @@ def main():
     with st.sidebar:
         st.markdown('<p class="sidebar-header">Control Panel</p>', unsafe_allow_html=True)
         
-        # File uploader
-        st.markdown("### Upload Image")
-        uploaded_file = st.file_uploader(
-            "Choose an image file",
-            type=['jpg', 'png', 'jpeg'],
-            help="Supported formats: JPG, PNG, JPEG"
-        )
+        # Theme Toggle
+        col_theme1, col_theme2 = st.columns([1, 3])
+        with col_theme1:
+            if st.session_state.theme == 'dark':
+                st.markdown("🌙")
+            else:
+                st.markdown("☀️")
+        with col_theme2:
+            theme_btn = st.button(
+                f"Switch to {'Light' if st.session_state.theme == 'dark' else 'Dark'} Mode", 
+                key="theme_toggle"
+            )
+            if theme_btn:
+                st.session_state.theme = 'light' if st.session_state.theme == 'dark' else 'dark'
+                st.rerun()
         
         st.markdown("---")
         
-        # Algorithm selection
-        st.markdown("### Edge Detection Algorithm")
-        algorithm = st.radio(
-            "Choose Operator:",
-            options=['Sobel', 'Roberts', 'Prewitt', 'Laplacian', 'Frei-Chen', 'Canny'],
-            help="Select the edge detection algorithm to apply"
-        )
-        
-        # Canny-specific parameters
-        if algorithm == 'Canny':
-            st.markdown("---")
-            st.markdown("### Canny Parameters")
-            canny_low = st.slider(
-                "Low Threshold",
-                min_value=0,
-                max_value=255,
-                value=50,
-                help="Edges with gradient below this are discarded"
-            )
-            canny_high = st.slider(
-                "High Threshold",
-                min_value=0,
-                max_value=255,
-                value=150,
-                help="Edges with gradient above this are strong edges"
-            )
-        else:
-            canny_low, canny_high = 50, 150
-        
-        st.markdown("---")
-        
-        # Process button
-        detect_btn = st.button("Detect Edges", use_container_width=True)
+        # Render controls in sidebar
+        controls = render_controls("sidebar")
         
         # Reset button
         if st.button("Reset App", use_container_width=True):
@@ -671,7 +763,7 @@ def main():
         # Algorithm info expander
         st.markdown("---")
         with st.expander("Algorithm Information"):
-            info = ALGORITHM_INFO[algorithm]
+            info = ALGORITHM_INFO[controls['algorithm']]
             st.markdown(f"**{info['name']}**")
             st.markdown(info['description'])
             if 'kernel_x' in info:
@@ -690,6 +782,13 @@ def main():
     st.markdown('<h1 class="main-title">Digital Image <span>Edge Detection</span></h1>', unsafe_allow_html=True)
     st.markdown('<p class="subtitle">Turn your images into edge maps in seconds.</p>', unsafe_allow_html=True)
     
+    # Use controls from sidebar
+    uploaded_file = controls['uploaded_file']
+    algorithm = controls['algorithm']
+    canny_low = controls['canny_low']
+    canny_high = controls['canny_high']
+    detect_btn = controls['detect_btn']
+
     # Check if image is uploaded
     if uploaded_file is not None:
         # Load the image
@@ -749,17 +848,11 @@ def main():
     
     else:
         # Show instruction when no image is uploaded
+        # Use dynamic classes instead of inline styles
         st.markdown("""
-        <div style="
-            background: #1c1f27;
-            border: 1px dashed #282e39;
-            border-radius: 16px;
-            padding: 3rem;
-            text-align: center;
-            margin: 2rem 0;
-        ">
-            <h3 style="color: #ffffff; margin-bottom: 0.5rem;">Upload an Image to Begin</h3>
-            <p style="color: #9da6b9;">
+        <div class="upload-instruction">
+            <h3 class="dynamic-text" style="margin-bottom: 0.5rem;">Upload an Image to Begin</h3>
+            <p class="dynamic-subtext">
                 Use the sidebar to upload a JPG, PNG, or JPEG image
             </p>
         </div>
@@ -775,16 +868,9 @@ def main():
             with algo_cols[idx % 3]:
                 info = ALGORITHM_INFO[algo]
                 st.markdown(f"""
-                <div style="
-                    background: #1c1f27;
-                    border: 1px solid #282e39;
-                    border-radius: 8px;
-                    padding: 1rem;
-                    margin-bottom: 1rem;
-                    height: 180px;
-                ">
-                    <h4 style="color: #ffffff; margin-bottom: 0.5rem;">{info['name']}</h4>
-                    <p style="color: #9da6b9; font-size: 0.85rem; line-height: 1.4;">
+                <div class="dynamic-card" style="height: 180px;">
+                    <h4 style="margin-bottom: 0.5rem;">{info['name']}</h4>
+                    <p class="dynamic-subtext" style="font-size: 0.85rem; line-height: 1.4;">
                         {info['description'][:150]}...
                     </p>
                 </div>
@@ -793,7 +879,7 @@ def main():
     # Footer
     st.markdown("---")
     st.markdown("""
-    <div style="text-align: center; color: #9da6b9; font-size: 0.85rem; padding: 1rem 0;">
+    <div style="text-align: center; font-size: 0.85rem; padding: 1rem 0;" class="dynamic-subtext">
         <p>Digital Image Processing - Edge Detection Application</p>
         <p>Built with Streamlit • OpenCV • NumPy</p>
     </div>
